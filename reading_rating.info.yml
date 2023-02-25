@@ -1,0 +1,6 @@
+name: Reading Rating
+type: module
+description: Rates the readability of text inputs
+core_version_requirement: '^10'
+dependencies:
+  - field_ui
