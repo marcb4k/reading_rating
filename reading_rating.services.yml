@@ -1,0 +1,4 @@
+services:
+  reading_rating.widget_settings:
+    class: Drupal\reading_rating\WidgetSettings
+    arguments: ['@module_handler']

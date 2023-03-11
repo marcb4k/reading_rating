@@ -1,1 +1,54 @@
 <?php
+
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\WidgetInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function reading_rating_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.reading_rating':
+      $output = '<h2>' . t('About') . '</h2>';
+      $output = t('
+        <p>To enable reading rating:</p>
+        <ol>
+          <li>Go to <strong>Manage form display</strong> settings page for the field you want to enable reading rating.</li>
+          <li>Open the settings for the field. Only textarea-based fields are supported at this time.</li>
+          <li>Open <strong>Reading Rating Settings</strong> details.</li>
+          <li>Check <strong>Enable Reading Rating</strong>.</li>
+          <li>Click <strong>Update</strong> on the field widget settings.</li>
+          <li>Click <strong>Save</strong> at the bottom of the form display.</li>
+        </ol>
+      ');
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_field_widget_third_party_settings_form().
+ */
+function reading_rating_field_widget_third_party_settings_form(WidgetInterface $plugin, FieldDefinitionInterface $field_definition, $form_mode, $form, FormStateInterface $form_state) {
+  $plugin_id = $plugin->getPluginId();
+  // Depending on the widget, we may have different settings.
+  $widget_settings = \Drupal::service('reading_rating.widget_settings');
+  $allowed_settings = $widget_settings->getAllowedSettings($plugin_id);
+
+  if (!empty($allowed_settings)) {
+    $element = [
+      '#type' => 'details',
+      '#title' => t('Reading Rating Settings'),
+      '#open' => FALSE,
+    ];
+
+    $element['enable_reading_rating'] = [
+        '#type' => 'checkbox',
+        '#title' => t('Enable Reading Rating'),
+        '#default_value' => $plugin->getThirdPartySetting('reading_rating', 'enable_reading_rating'),
+      ];
+
+    return $element;
+  }
+}
